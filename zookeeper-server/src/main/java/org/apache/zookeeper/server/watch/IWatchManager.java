@@ -19,8 +19,10 @@
 package org.apache.zookeeper.server.watch;
 
 import java.io.PrintWriter;
+import java.util.List;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
+import org.apache.zookeeper.data.ACL;
 
 public interface IWatchManager {
 
@@ -88,6 +90,17 @@ public interface IWatchManager {
     WatcherOrBitSet triggerWatch(String path, EventType type);
 
     /**
+     * Distribute the watch event for the given path.
+     *
+     * @param path znode path
+     * @param type the watch event type
+     * @param acl ACL of the znode in path
+     *
+     * @return the watchers have been notified
+     */
+    WatcherOrBitSet triggerWatch(String path, EventType type, List<ACL> acl);
+
+    /**
      * Distribute the watch event for the given path, but ignore those
      * suppressed ones.
      *
@@ -98,6 +111,19 @@ public interface IWatchManager {
      * @return the watchers have been notified
      */
     WatcherOrBitSet triggerWatch(String path, EventType type, WatcherOrBitSet suppress);
+
+    /**
+     * Distribute the watch event for the given path, but ignore those
+     * suppressed ones.
+     *
+     * @param path znode path
+     * @param type the watch event type
+     * @param suppress the suppressed watcher set
+     * @param acl ACL of the znode in path
+     *
+     * @return the watchers have been notified
+     */
+    WatcherOrBitSet triggerWatch(String path, EventType type, WatcherOrBitSet suppress, List<ACL> acl);
 
     /**
      * Get the size of watchers.

@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -29,8 +30,10 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
+import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.server.ServerCnxn;
 import org.apache.zookeeper.server.ServerMetrics;
+import org.apache.zookeeper.server.ServerWatcher;
 import org.apache.zookeeper.server.ZooTrace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,11 +119,21 @@ public class WatchManager implements IWatchManager {
 
     @Override
     public WatcherOrBitSet triggerWatch(String path, EventType type) {
-        return triggerWatch(path, type, null);
+        return triggerWatch(path, type, null, null);
     }
 
     @Override
-    public WatcherOrBitSet triggerWatch(String path, EventType type, WatcherOrBitSet supress) {
+    public WatcherOrBitSet triggerWatch(String path, EventType type, WatcherOrBitSet suppress) {
+        return triggerWatch(path, type, suppress, null);
+    }
+
+    @Override
+    public WatcherOrBitSet triggerWatch(String path, EventType type, List<ACL> acl) {
+        return triggerWatch(path, type, null, acl);
+    }
+
+    @Override
+    public WatcherOrBitSet triggerWatch(String path, EventType type, WatcherOrBitSet supress, List<ACL> acl) {
         WatchedEvent e = new WatchedEvent(type, KeeperState.SyncConnected, path);
         Set<Watcher> watchers = new HashSet<>();
         PathParentIterator pathParentIterator = getPathParentIterator(path);
@@ -165,7 +178,11 @@ public class WatchManager implements IWatchManager {
             if (supress != null && supress.contains(w)) {
                 continue;
             }
-            w.process(e);
+            if (w instanceof ServerWatcher) {
+                ((ServerWatcher) w).process(e, acl);
+            } else {
+                w.process(e);
+            }
         }
 
         switch (type) {
