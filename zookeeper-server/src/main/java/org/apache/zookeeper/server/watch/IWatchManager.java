@@ -20,7 +20,6 @@ package org.apache.zookeeper.server.watch;
 
 import java.io.PrintWriter;
 import java.util.List;
-
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.data.ACL;
