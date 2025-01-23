@@ -71,6 +71,12 @@ jobs:
       run: mvn -B -V -e -ntp "-Dstyle.color=always" ${{ matrix.profile.args }}
       env:
         MAVEN_OPTS: -Djansi.force=true
+    - name: Upload jars
+      uses: ali-security/upload-artifact@v3
+      with:
+        path: ./**/target/*.jar
+        name: jars-${{ matrix.profile.name }}
+        if-no-files-found: ignore
     - name: Upload unit test results
       if: ${{ failure() }}
       uses: ali-security/upload-artifact@v3
