@@ -30,10 +30,11 @@ install:
     fi
 
 script:
-  - mvn clean
+  - mvn -B -V -e clean
+  - mvn clean -B -V -e
   - mvn verify
   - mvn -DskipTests spotbugs:check checkstyle:check -Pfull-build
-  - mvn -X clean verify -DskipTests spotbugs:check checkstyle:check -Pfull-build
+  - mvn clean verify -B -V -e -DskipTests spotbugs:check checkstyle:check -Pfull-build
 
 branches:
   only:
