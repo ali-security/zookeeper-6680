@@ -24,10 +24,12 @@ addons:
     packages:
     - libcppunit-dev
 
+before_install:
+  - curl -o apache.tar.gz "https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz"
+  - tar -xzf apache.tar.gz
+  - alias mvn="./apache-maven-3.9.9/bin/mvn"
+
 install:
-  - if [ "${TRAVIS_CPU_ARCH}" == "arm64" ]; then
-     sudo apt-get install maven;
-    fi
   - mvn -version
 
 script:
